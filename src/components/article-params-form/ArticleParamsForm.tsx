@@ -6,7 +6,7 @@ import { RadioGroup } from 'src/ui/radio-group';
 import { Separator } from 'src/ui/separator';
 
 import styles from './ArticleParamsForm.module.scss';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import clsx from 'clsx';
 import {
 	ArticleStateType,
@@ -19,7 +19,13 @@ import {
 	fontSizeOptions,
 } from 'src/constants/articleProps';
 
-export const ArticleParamsForm = () => {
+type ArticleParamsFormProps = {
+	setArticleState: (newState: ArticleStateType) => void;
+};
+
+export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
+	const { setArticleState } = props;
+
 	// Состояние формы (открыта/закрыта)
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -41,6 +47,19 @@ export const ArticleParamsForm = () => {
 		};
 	};
 
+	// Обработчик отправки формы
+	const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setArticleState(formState);
+		toggleIsOpen();
+	};
+	// Обработчик сброса настроек формы
+	const handleFormReset = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setFormState(defaultArticleState);
+		setArticleState(defaultArticleState);
+	};
+
 	// Условное применение классов при открытии формы
 	const formStyle = clsx({
 		[styles.container]: true,
@@ -51,7 +70,10 @@ export const ArticleParamsForm = () => {
 		<>
 			<ArrowButton isOpen={isOpen} onClick={toggleIsOpen} />
 			<aside className={formStyle}>
-				<form className={styles.form}>
+				<form
+					className={styles.form}
+					onSubmit={handleFormSubmit}
+					onReset={handleFormReset}>
 					<Text size={31} weight={800} uppercase={true}>
 						Задайте параметры
 					</Text>
