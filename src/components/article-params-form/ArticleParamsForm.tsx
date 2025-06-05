@@ -6,7 +6,7 @@ import { RadioGroup } from 'src/ui/radio-group';
 import { Separator } from 'src/ui/separator';
 
 import styles from './ArticleParamsForm.module.scss';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useRef } from 'react';
 import clsx from 'clsx';
 import {
 	ArticleStateType,
@@ -18,6 +18,7 @@ import {
 	fontFamilyOptions,
 	fontSizeOptions,
 } from 'src/constants/articleProps';
+import { useOutsideClickClose } from './hooks/useOutsideClickClose';
 
 type ArticleParamsFormProps = {
 	setArticleState: (newState: ArticleStateType) => void;
@@ -66,10 +67,17 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 		[styles.container_open]: isOpen,
 	});
 
+	const rootRef = useRef<HTMLDivElement>(null);
+
+	useOutsideClickClose({
+		rootRef: rootRef,
+		onClose: () => setIsOpen(false),
+	});
+
 	return (
 		<>
 			<ArrowButton isOpen={isOpen} onClick={toggleIsOpen} />
-			<aside className={formStyle}>
+			<aside className={formStyle} ref={rootRef}>
 				<form
 					className={styles.form}
 					onSubmit={handleFormSubmit}
